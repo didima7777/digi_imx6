@@ -77,7 +77,7 @@ static inline int ksz_read16(struct ksz_device *dev, u32 reg, u16 *val)
 	ret = regmap_raw_read(dev->regmap[0], reg, val, 2);
 	if (!ret)
 		*val = be16_to_cpu(*val);
-	printk("spi read16 %d \n",*val);
+//	printk("spi read16 %d \n",*val);
 	return ret;
 }
 
@@ -91,7 +91,7 @@ static inline int ksz_read24(struct ksz_device *dev, u32 reg, u32 *val)
 		/* convert to 24bit */
 		*val >>= 8;
 	}
-	printk("spi read24  %d \n",*val);
+//	printk("spi read24  %d \n",*val);
 	return ret;
 }
 
@@ -103,7 +103,7 @@ static inline int ksz_read32(struct ksz_device *dev, u32 reg, u32 *val)
 	ret = regmap_raw_read(dev->regmap[0], reg, val, 4);
 	if (!ret)
 		*val = be32_to_cpu(*val);
-	printk("spi read32 %d \n",*val);
+//	printk("spi read32 %d \n",*val);
 	return ret;
 }
 
