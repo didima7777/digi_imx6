@@ -1586,23 +1586,35 @@ static int ksz9477_switch_detect(struct ksz_device *dev)
 	int ret;
 	int chip = -1;
 
+	/* test read spi*/
+	//while(1) 
+	{	    
+	    ret = ksz_read32(dev, REG_CHIP_ID0__1, &id32);
+	    msleep(200);
+	    ret = ksz_read32(dev, REG_CHIP_ID0__1, &id32);
+	}
 	/* turn off SPI DO Edge select */
 	ret = ksz_read8(dev, REG_SW_GLOBAL_SERIAL_CTRL_0, &data8);
+	printk("ksz9477_switch_detect turn off SPI DO\n");
 	if (ret)
 		return ret;
 	if (data8 == 0 || data8 == 0xff)
 		return -ENODEV;
 
 	data8 &= ~SPI_AUTO_EDGE_DETECTION;
+
 	ret = ksz_write8(dev, REG_SW_GLOBAL_SERIAL_CTRL_0, data8);
+	printk("ksz9477_switch_detect REG_SW_GLOBAL_SERIAL_CTRL_0\n");
 	if (ret)
 		return ret;
 
 	/* read chip id */
 	ret = ksz_read32(dev, REG_CHIP_ID0__1, &id32);
+	printk("ksz9477_switch_detect read id\n");
 	if (ret)
 		return ret;
 	ret = ksz_read8(dev, REG_GLOBAL_OPTIONS, &data8);
+	printk("ksz9477_switch_detect REG_GLOBAL_OPT\n");
 	if (ret)
 		return ret;
 
@@ -1614,6 +1626,7 @@ static int ksz9477_switch_detect(struct ksz_device *dev)
 	id_hi = (u8)(id32 >> 16);
 	id_lo = (u8)(id32 >> 8);
 	if ((id_lo & 0xf) == 3) {
+		printk("ksz9477_switch_detect ==3\n");
 		dev->features |= IS_9893;
 		if (data8 & SW_QW_ABLE)
 			dev->features &= ~GBIT_SUPPORT;
@@ -1626,6 +1639,7 @@ static int ksz9477_switch_detect(struct ksz_device *dev)
 		else
 			chip = KSZ9563_SW_CHIP;
 	} else {
+		printk("ksz9477_switch_detect !=3\n");
 		dev->features |= NEW_XMII;
 		if (!(data8 & SW_GIGABIT_ABLE))
 			dev->features &= ~GBIT_SUPPORT;
@@ -1726,6 +1740,15 @@ static const struct ksz_chip_data ksz9477_switch_chips[] = {
 		.port_cnt = 3,		/* total port count */
 	},
 	{
+		.chip_id = 0x00989360,
+		.dev_name = "KSZ9893",
+		.num_vlans = 4096,
+		.num_alus = 4096,
+		.num_statics = 16,
+		.cpu_ports = 0x07,	/* can be configured as cpu port */
+		.port_cnt = 3,		/* total port count */
+	},
+	{
 		.chip_id = 0x00989500,
 		.dev_name = "KSZ8565",
 		.num_vlans = 4096,
@@ -1742,12 +1765,15 @@ static int ksz9477_switch_init(struct ksz_device *dev)
 
 	dev->ds->ops = &ksz9477_switch_ops;
 
+	printk("ksz9477_switch_init \n");
+
 	for (i = 0; i < ARRAY_SIZE(ksz9477_switch_chips); i++) {
 		const struct ksz_chip_data *chip = &ksz9477_switch_chips[i];
 
 		if (dev->chip_id == chip->chip_id) {
 			if (!dev->name)
 				dev->name = chip->dev_name;
+			printk("ksz9477_switch_init finded %s \n",chip->dev_name);
 			dev->num_vlans = chip->num_vlans;
 			dev->num_alus = chip->num_alus;
 			dev->num_statics = chip->num_statics;
@@ -1761,6 +1787,7 @@ static int ksz9477_switch_init(struct ksz_device *dev)
 	/* no switch found */
 	if (!dev->port_cnt)
 		return -ENODEV;
+	printk("ksz9477_switch_init ports %d \n",dev->port_cnt);
 
 	dev->port_mask = (1 << dev->port_cnt) - 1;
 	dev->port_mask &= dev->cpu_ports;
@@ -1771,6 +1798,9 @@ static int ksz9477_switch_init(struct ksz_device *dev)
 	i = dev->mib_port_cnt;
 	dev->ports = devm_kzalloc(dev->dev, sizeof(struct ksz_port) * i,
 				  GFP_KERNEL);
+
+	printk("ksz9477_switch_init ports %d \n",dev->ports);
+
 	if (!dev->ports)
 		return -ENOMEM;
 	for (i = 0; i < dev->mib_port_cnt; i++) {
@@ -1780,21 +1810,23 @@ static int ksz9477_switch_init(struct ksz_device *dev)
 				     sizeof(u64) *
 				     (TOTAL_SWITCH_COUNTER_NUM + 1),
 				     GFP_KERNEL);
-		if (!dev->ports[i].mib.counters)
+		if (!dev->ports[i].mib.counters) {
+			printk("ksz9477_switch_init devm_kzalloc \n");
 			return -ENOMEM;
+		}
 	}
 	i = phy_drivers_register(ksz9477_phy_driver,
 				 ARRAY_SIZE(ksz9477_phy_driver), THIS_MODULE);
 
 	dev->regs_size = KSZ9477_REGS_SIZE;
-	i = sysfs_create_bin_file(&dev->dev->kobj,
-				  &ksz9477_registers_attr);
-
+	//i = sysfs_create_bin_file(&dev->dev->kobj,&ksz9477_registers_attr);
+	printk("ksz9477_switch_init OK! \n");
 	return 0;
 }
 
 static void ksz9477_switch_exit(struct ksz_device *dev)
 {
+	printk("ksz9477_switch_exit \n");
 	sysfs_remove_bin_file(&dev->dev->kobj, &ksz9477_registers_attr);
 	phy_drivers_unregister(ksz9477_phy_driver,
 			       ARRAY_SIZE(ksz9477_phy_driver));

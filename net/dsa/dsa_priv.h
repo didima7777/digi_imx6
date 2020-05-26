@@ -81,6 +81,10 @@ extern const struct dsa_device_ops trailer_netdev_ops;
 /* tag_brcm.c */
 extern const struct dsa_device_ops brcm_netdev_ops;
 
+
+/* tag_ksz.c */
+extern const struct dsa_device_ops ksz_netdev_ops;
+
 /* tag_qca.c */
 extern const struct dsa_device_ops qca_netdev_ops;
 

@@ -433,6 +433,19 @@ config SND_SOC_IMX_SI476X
 	  Say Y if you want to add support for Soc audio for the AMFM Tuner chip
 	  SI476x module.
 
+
+config SND_SOC_IMX_SI476XTDM
+        tristate "SoC Audio support for i.MX boards with si476xTDM"
+        select SND_SOC_IMX_PCM_DMA
+        select SND_SOC_IMX_AUDMUX
+        select SND_SOC_FSL_SSI
+        select SND_SOC_FSL_UTILS
+        select SND_SOC_SI476XTDM
+        help
+          SoC Audio support for i.MX boards with SI476x
+          Say Y if you want to add support for Soc audio for the AMFM Tuner chip
+          SI476x module.
+
 config SND_SOC_IMX_HDMI
 	tristate "SoC Audio support for i.MX boards with HDMI port"
 	depends on MFD_MXC_HDMI

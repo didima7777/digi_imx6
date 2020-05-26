@@ -23,23 +23,23 @@
 };
 
 &hdmi_core {
-	status = "okay";
+	status = "disabled";
 };
 
 &hdmi_video {
-	status = "okay";
+	status = "disabled";
 };
 
 &hdmi_audio {
-	status = "okay";
+	status = "disabled";
 };
 
 &sound_hdmi {
-	status = "okay";
+	status = "disabled";
 };
 
 &sound_sgtl5000 {
-	status = "okay";
+	status = "disabled";
 };
 
 &codec_power {
@@ -209,7 +209,7 @@
 };
 
 &usbotg {
-	status = "okay";
+	status = "disabled";
 };
 
 &usdhc2 {

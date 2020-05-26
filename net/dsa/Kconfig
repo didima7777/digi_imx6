@@ -30,6 +30,9 @@ config NET_DSA_HWMON
 config NET_DSA_TAG_BRCM
 	bool
 
+config NET_DSA_TAG_KSZ
+	bool
+
 config NET_DSA_TAG_DSA
 	bool
 

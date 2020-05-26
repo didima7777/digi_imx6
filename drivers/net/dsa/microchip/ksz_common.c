@@ -479,16 +479,22 @@ int ksz_switch_register(struct ksz_device *dev,
 		return -EINVAL;
 
 	ret = dev->dev_ops->init(dev);
+	printk("ksz_switch_register init(dev) %d \n",ret);
 	if (ret)
 		return ret;
 
 	if (dev->dev->of_node) {
+		printk("ksz_switch_register of_get_phy_mode name %s \n",dev->dev->of_node->name);
+		printk("ksz_switch_register of_get_phy_mode type %s \n",dev->dev->of_node->type);
+		printk("ksz_switch_register of_get_phy_mode fn %s \n",dev->dev->of_node->full_name);
 		ret = of_get_phy_mode(dev->dev->of_node);
+		printk("ksz_switch_register of_get_phy_mode %d \n",ret);
 		if (ret >= 0)
 			dev->interface = ret;
 	}
-
-	ret = dsa_register_switch(dev->ds, dev->ds->dev->of_node);
+	printk("ksz_switch_register dsa_register_switch \n");
+	ret = dsa_register_switch(dev->ds, dev->ds->dev->of_node);	
+	printk("ksz_switch_register of_node %d \n",ret);
 	if (ret) {
 		dev->dev_ops->exit(dev);
 		return ret;

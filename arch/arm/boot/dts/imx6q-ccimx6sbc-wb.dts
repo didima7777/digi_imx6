@@ -18,28 +18,24 @@
 /* ConnectCore 6 Quad/Dual SBC carrier board */
 #include "imx6q-ccimx6sbc.dtsi"
 
-&fec {
-	status = "okay";
-};
-
 &hdmi_core {
-	status = "okay";
+	status = "disabled";
 };
 
 &hdmi_video {
-	status = "okay";
+	status = "disabled";
 };
 
 &hdmi_audio {
-	status = "okay";
+	status = "disabled";
 };
 
 &sound_hdmi {
-	status = "okay";
+	status = "disabled";
 };
 
 &sound_sgtl5000 {
-	status = "okay";
+	status = "disabled";
 };
 
 &codec_power {
@@ -101,10 +97,60 @@
 	 * Add your slave devices here. Next is an example of spidev.
 	 * Expect a harmless kernel warning if you enable spidev as slave.
 	 */
-	spidev@0 {
-		reg = <0>;
+
+					ksz9893: ksz9893@0 {
+						compatible = "microchip,ksz9893dsa";
+						reg = <0x0>;
+						spi-max-frequency = <4000000>;
+						spi-cpha;
+						spi-cpol;
+						phy-mode="rgmii";
+						status = "okay";
+
+						ports {
+							#address-cells = <0x1>;
+							#size-cells = <0x0>;
+
+							port@0 {
+								reg = <0x0>;
+								label = "lan1";
+							};
+
+							port@1 {
+								reg = <0x1>;
+								label = "lan2";
+							};
+
+							port@2 {
+								reg = <0x2>;
+								label = "cpu";
+								ethernet = <&fec>;
+								phy-mode="rgmii";
+								fixed-link {
+									speed = <1000>;
+									full-duplex;
+								};
+							};
+						};
+					};
+
+/*
+	spidev@1 {
+		reg = <1>;
 		compatible = "spidev";
-		spi-max-frequency = <4000000>;
+		spi-max-frequency = <40000000>;
+	};
+*/
+};
+
+&fec {
+	phy-hadle=<&ksz9893>;
+	phy-mode="rgmii";
+	fsl,magic-packet;
+	status = "okay";
+	fixed-link {
+		speed = <1000>;
+		full-duplex;
 	};
 };
 
@@ -203,11 +249,11 @@
 };
 
 &usbh1 {
-	status = "okay";
+	status = "disabled";
 };
 
 &usbotg {
-	status = "okay";
+	status = "disabled";
 };
 
 &usdhc2 {

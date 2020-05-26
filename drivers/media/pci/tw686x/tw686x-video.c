@@ -114,11 +114,11 @@ static int tw686x_memcpy_dma_alloc(struct tw686x_video_channel *vc,
 	     "Allocating buffer but previous still here\n");
 
 	len = (vc->width * vc->height * vc->format->depth) >> 3;
-	virt = pci_alloc_consistent(dev->pci_dev, len,
-				    &vc->dma_descs[pb].phys);
+	virt = dma_alloc_coherent(&dev->pci_dev->dev, len,
+				    &vc->dma_descs[pb].phys,GFP_KERNEL);
 	if (!virt) {
 		v4l2_err(&dev->v4l2_dev,
-			 "dma%d: unable to allocate %s-buffer\n",
+			 "(memcpy) dma%d: unable to allocate %s-buffer\n",
 			 vc->ch, pb ? "B" : "P");
 		return -ENOMEM;
 	}
@@ -241,7 +241,7 @@ static void tw686x_sg_buf_refill(struct tw686x_video_channel *vc,
 		buf_len = (vc->width * vc->height * vc->format->depth) >> 3;
 		if (tw686x_sg_desc_fill(vc->sg_descs[pb], buf, buf_len)) {
 			v4l2_err(&dev->v4l2_dev,
-				 "dma%d: unable to fill %s-buffer\n",
+				 "(sg_buf) dma%d: unable to fill %s-buffer\n",
 				 vc->ch, pb ? "B" : "P");
 			vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
 			continue;
@@ -281,11 +281,11 @@ static int tw686x_sg_dma_alloc(struct tw686x_video_channel *vc,
 
 	if (desc->size) {
 
-		virt = pci_alloc_consistent(dev->pci_dev, desc->size,
-					    &desc->phys);
+		virt = dma_alloc_coherent(&dev->pci_dev->dev, desc->size,
+					    &desc->phys,GFP_KERNEL);
 		if (!virt) {
 			v4l2_err(&dev->v4l2_dev,
-				 "dma%d: unable to allocate %s-buffer\n",
+				 "(sg_dma) dma%d: unable to allocate %s-buffer\n",
 				 vc->ch, pb ? "B" : "P");
 			return -ENOMEM;
 		}

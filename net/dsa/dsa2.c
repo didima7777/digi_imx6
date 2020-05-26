@@ -472,8 +472,11 @@ static int dsa_cpu_parse(struct device_node *port, u32 index,
 
 	tag_protocol = ds->ops->get_tag_protocol(ds);
 	dst->tag_ops = dsa_resolve_tag_protocol(tag_protocol);
+	
 	if (IS_ERR(dst->tag_ops)) {
 		dev_warn(ds->dev, "No tagger for this switch\n");
+		printk("dst->tag_ops %d \n",dst->tag_ops);
+		printk("tag_protocol %d \n",tag_protocol);
 		return PTR_ERR(dst->tag_ops);
 	}
 
@@ -517,6 +520,7 @@ static int dsa_dst_parse(struct dsa_switch_tree *dst)
 			continue;
 
 		err = dsa_ds_parse(dst, ds);
+		printk("err = dsa_ds_parse(dst, ds) %d \n", err);
 		if (err)
 			return err;
 	}
@@ -604,6 +608,7 @@ static int _dsa_register_switch(struct dsa_switch *ds, struct device_node *np)
 	int i, err;
 
 	err = dsa_parse_member(np, &tree, &index);
+	printk("dsa_parse_member %d \n",err);
 	if (err)
 		return err;
 
@@ -611,12 +616,14 @@ static int _dsa_register_switch(struct dsa_switch *ds, struct device_node *np)
 		return PTR_ERR(ports);
 
 	err = dsa_parse_ports_dn(ports, ds);
+	printk("dsa_parse_ports_dn %d \n",err);
 	if (err)
 		return err;
 
 	dst = dsa_get_dst(tree);
 	if (!dst) {
 		dst = dsa_add_dst(tree);
+		printk("dsa_add_dst %d \n",dst);
 		if (!dst)
 			return -ENOMEM;
 	}
@@ -636,9 +643,10 @@ static int _dsa_register_switch(struct dsa_switch *ds, struct device_node *np)
 	dsa_dst_add_ds(dst, ds, index);
 
 	err = dsa_dst_complete(dst);
-	if (err < 0)
+	if (err < 0) {
+		printk("dsa_dst_complete 1 %d \n",err);
 		goto out_del_dst;
-
+	}
 	if (err == 1) {
 		/* Not all switches registered yet */
 		err = 0;
@@ -646,16 +654,19 @@ static int _dsa_register_switch(struct dsa_switch *ds, struct device_node *np)
 	}
 
 	if (dst->applied) {
+		printk("DSA: Disjoint trees?\n");
 		pr_info("DSA: Disjoint trees?\n");
 		return -EINVAL;
 	}
 
 	err = dsa_dst_parse(dst);
-	if (err)
+	if (err) {
+		printk("dsa_dst_parse 2 %d \n",err);
 		goto out_del_dst;
-
+	}
 	err = dsa_dst_apply(dst);
 	if (err) {
+		printk("dsa_dst_apply 3 %d \n",err);
 		dsa_dst_unapply(dst);
 		goto out_del_dst;
 	}
@@ -664,8 +675,10 @@ static int _dsa_register_switch(struct dsa_switch *ds, struct device_node *np)
 	return 0;
 
 out_del_dst:
+	printk("error out_del_dst \n");
 	dsa_dst_del_ds(dst, ds, ds->index);
 out:
+	printk("error out\n");
 	dsa_put_dst(dst);
 
 	return err;

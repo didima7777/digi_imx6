@@ -4,3 +4,4 @@ obj-$(CONFIG_NET_DSA_QCA8K)	+= qca8k.o
 
 obj-y				+= b53/
 obj-y				+= mv88e6xxx/
+obj-y                           += microchip/
