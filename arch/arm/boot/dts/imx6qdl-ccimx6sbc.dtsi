@@ -474,6 +474,7 @@
 				MX6QDL_PAD_RGMII_TD3__RGMII_TD3       0x1b0b0
 				MX6QDL_PAD_RGMII_TX_CTL__RGMII_TX_CTL 0x1b0b0
 				MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK  0x1b0b0
+
 				MX6QDL_PAD_RGMII_RXC__RGMII_RXC       0x1b0b0
 				MX6QDL_PAD_RGMII_RD0__RGMII_RD0       0x1b0b0
 				MX6QDL_PAD_RGMII_RD1__RGMII_RD1       0x1b0b0
@@ -481,8 +482,11 @@
 				MX6QDL_PAD_RGMII_RD3__RGMII_RD3       0x1b0b0
 				MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL 0x1b0b0
 				MX6QDL_PAD_ENET_REF_CLK__ENET_TX_CLK  0x1b0b0
+
 				MX6QDL_PAD_ENET_TX_EN__GPIO1_IO28     0x1b0b0
 				MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25    0x1b0b0
+
+				MX6QDL_PAD_GPIO_16__ENET_REF_CLK      0x4001b0a8
 			>;
 		};
 	};
@@ -801,7 +805,7 @@
 				/* CHRG_DOK_N */
 				MX6QDL_PAD_NANDF_CS3__GPIO6_IO16 0x80000000
 				/* LVDS0_PEN_IRQ_N */
-				MX6QDL_PAD_GPIO_16__GPIO7_IO11	 0x80000000
+				/*MX6QDL_PAD_GPIO_16__GPIO7_IO11	 0x80000000 */
 				/* LVDS1_PEN_IRQ_N */
 				MX6QDL_PAD_EIM_D23__GPIO3_IO23 0x80000000
 				/* AUD_CLK / CSI0_MCLK / CSI1_MCLK */
@@ -917,7 +921,7 @@
 	pinctrl-1 = <&pinctrl_usdhc2_100mhz>;
 	pinctrl-2 = <&pinctrl_usdhc2_200mhz>;
 	broken-cd;
-	no-1-8-v;
-	keep-power-in-suspend;
-	enable-sdio-wakeup;
+       no-1-8-v;
+       keep-power-in-suspend;
+       enable-sdio-wakeup;
 };

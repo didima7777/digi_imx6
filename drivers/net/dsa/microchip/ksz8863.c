@@ -1204,6 +1204,7 @@ static int ksz8863_switch_detect(struct ksz_device *dev)
 
 	/* read chip id */
 	ret = ksz_read16(dev, REG_CHIP_ID0, &id16);
+	ret = ksz_read16(dev, REG_CHIP_ID0, &id16);
 	if (ret)
 		return ret;
 

@@ -127,6 +127,7 @@ int ksz_phy_write16(struct dsa_switch *ds, int addr, int reg, u16 val)
 {
 	struct ksz_device *dev = ds->priv;
 
+	printk("ksz_phy_write16 reg %x -> %x \n",reg,val);
 	dev->dev_ops->w_phy(dev, addr, reg, val);
 
 	return 0;

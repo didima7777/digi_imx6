@@ -25,38 +25,62 @@ static struct sk_buff *ksz_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct dsa_switch *ds = p->parent;
 	struct ksz_device *sw = ds->priv;
 	struct sk_buff *nskb;
+
+	u8 *addr;
 	int len;
 	int padlen;
 
 	len = KSZ_INGRESS_TAG_LEN;
-	if (sw->tag_ops->get_len)
-		len = sw->tag_ops->get_len(sw);
-
+//	if (sw->tag_ops->get_len)
+//		len = sw->tag_ops->get_len(sw);
+//	len = 2;
 	padlen = (skb->len >= ETH_ZLEN) ? 0 : ETH_ZLEN - skb->len;
 
-	nskb = alloc_skb(NET_IP_ALIGN + skb->len +
-			 padlen + len, GFP_ATOMIC);
-	if (!nskb) {
+
+	if (skb_tailroom(skb) 	>= padlen + KSZ_INGRESS_TAG_LEN ) 
+	{
+		if (skb_put_padto(skb,skb->len + padlen))
+			return NULL;
+		nskb = skb;
+	} else 
+	{
+		nskb = alloc_skb(NET_IP_ALIGN + skb->len +
+				 padlen + len, GFP_ATOMIC);
+		if (!nskb) {
+			kfree_skb(skb);
+			return NULL;
+		}
+		skb_reserve(nskb, NET_IP_ALIGN);
+
+		skb_reset_mac_header(nskb);
+		skb_set_network_header(nskb,
+				       skb_network_header(skb) - skb->head);
+		skb_set_transport_header(nskb,
+					 skb_transport_header(skb) - skb->head);
+		skb_copy_and_csum_dev(skb, skb_put(nskb, skb->len));
+
+		//check
+		//if ( skb_put_padto(nskb,nskb->len + padlen))
+		//	return NULL; 
+
 		kfree_skb(skb);
-		return NULL;
 	}
-	skb_reserve(nskb, NET_IP_ALIGN);
-
-	skb_reset_mac_header(nskb);
-	skb_set_network_header(nskb,
-			       skb_network_header(skb) - skb->head);
-	skb_set_transport_header(nskb,
-				 skb_transport_header(skb) - skb->head);
-	skb_copy_and_csum_dev(skb, skb_put(nskb, skb->len));
-	kfree_skb(skb);
-
+/*
 	if (padlen) {
 		u8 *pad = skb_put(nskb, padlen);
 		memset(pad, 0, padlen);
 	}
+*/
+	addr = skb_mac_header(nskb);
+	//sw->tag_ops->set_tag(sw, skb_put(nskb, len), skb_mac_header(nskb),p->port);
 
-	sw->tag_ops->set_tag(sw, skb_put(nskb, len), skb_mac_header(nskb),
-			     p->port);
+	u8 *tag = (u8 *)skb_put(nskb, len);
+
+	tag[0]=1<<p->port;
+
+
+	if ( is_link_local_ether_addr(addr))	
+		tag[0] |=1<<5;
 
 	return nskb;
 }
@@ -77,6 +101,7 @@ static int ksz_rcv(struct sk_buff *skb, struct net_device *dev,
 	sw = ds->priv;
 
 	skb = skb_unshare(skb, GFP_ATOMIC);
+
 	if (skb == NULL)
 		goto out;
 
@@ -86,10 +111,11 @@ static int ksz_rcv(struct sk_buff *skb, struct net_device *dev,
 	tag = skb_tail_pointer(skb) - KSZ_EGRESS_TAG_LEN;
 
 	len = KSZ_EGRESS_TAG_LEN;
-	if (sw->tag_ops->get_tag)
-		len = sw->tag_ops->get_tag(sw, tag, &source_port);
-	else
-		source_port = tag[0] & 7;
+//	if (sw->tag_ops->get_tag)
+//		len = sw->tag_ops->get_tag(sw, tag, &source_port);
+//	else
+
+	source_port = tag[0] & 3;
 
 	if (source_port >= DSA_MAX_PORTS || !ds->ports[source_port].netdev)
 		goto out_drop;

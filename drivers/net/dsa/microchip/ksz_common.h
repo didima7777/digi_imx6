@@ -110,6 +110,7 @@ static inline int ksz_read32(struct ksz_device *dev, u32 reg, u32 *val)
 static inline int ksz_write8(struct ksz_device *dev, u32 reg, u8 value)
 {
 	KSZ_BYTE_REG(reg);
+	//printk("spi write8 %x -> %x \n",reg,value);
 	return regmap_raw_write(dev->regmap[0], reg, &value, 1);
 }
 
@@ -117,6 +118,7 @@ static inline int ksz_write16(struct ksz_device *dev, u32 reg, u16 value)
 {
 	KSZ_WORD_REG(reg);
 	value = cpu_to_be16(value);
+	//printk("spi write16 %x -> %x \n",reg,value);
 	return regmap_raw_write(dev->regmap[0], reg, &value, 2);
 }
 
@@ -125,6 +127,8 @@ static inline int ksz_write24(struct ksz_device *dev, u32 reg, u32 value)
 	/* make it to big endian 24bit from MSB */
 	value <<= 8;
 	value = cpu_to_be32(value);
+	//printk("spi write24 %x -> %x \n",reg,value);
+
 	return regmap_raw_write(dev->regmap[0], reg, &value, 3);
 }
 
@@ -132,6 +136,8 @@ static inline int ksz_write32(struct ksz_device *dev, u32 reg, u32 value)
 {
 	KSZ_DWORD_REG(reg);
 	value = cpu_to_be32(value);
+	//printk("spi write32 %x -> %x \n",reg,value);
+
 	return regmap_raw_write(dev->regmap[0], reg, &value, 4);
 }
 
@@ -144,6 +150,10 @@ static inline int ksz_get(struct ksz_device *dev, u32 reg, void *data,
 static inline int ksz_set(struct ksz_device *dev, u32 reg, void *data,
 			  size_t len)
 {
+	int i = 0;
+	for (i = 0; i < len; i++)
+		printk("spi set write %x -> %x \n",reg,((int*)data)[i]);
+
 	return regmap_raw_write(dev->regmap[0], reg, data, len);
 }
 
