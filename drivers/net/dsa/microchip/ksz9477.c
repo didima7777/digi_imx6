@@ -1297,7 +1297,14 @@ static void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
 	printk("ksz port setup dev->phy_port_cnt %d\n",dev->phy_port_cnt);
 
 	/* enable tag tail for host port */
-	if (cpu_port) ksz_port_cfg(dev, port, REG_PORT_CTRL_0, PORT_TAIL_TAG_ENABLE, true);
+	if (cpu_port) 
+		ksz_port_cfg(dev, port, REG_PORT_CTRL_0, PORT_TAIL_TAG_ENABLE, true);
+	else {
+		ksz_pread16(dev, port, REG_PORT_PHY_1000_CTRL, &data16);
+		data16 &= ~PORT_AUTO_NEG_1000BT_FD;
+		data16 &= ~PORT_AUTO_NEG_1000BT;
+		ksz_pwrite16(dev, port, REG_PORT_PHY_1000_CTRL, data16);
+	}
 
 	ksz_port_cfg(dev, port, REG_PORT_CTRL_0, PORT_MAC_LOOPBACK, false); //$ 3
 

@@ -72,6 +72,7 @@ enum otg_fsm_timer {
 	A_TST_MAINT,
 	B_SRP_REQD,
 	B_TST_SUSP,
+	HNP_POLLING,
 
 	NUM_OTG_FSM_TIMERS,
 };
@@ -344,6 +345,7 @@ static inline int otg_start_gadget(struct otg_fsm *fsm, int on)
 	return fsm->ops->start_gadget(fsm, on);
 }
 
+int otg_hnp_polling(struct otg_fsm *fsm);
 int otg_statemachine(struct otg_fsm *fsm);
 
 #endif /* __LINUX_USB_OTG_FSM_H */

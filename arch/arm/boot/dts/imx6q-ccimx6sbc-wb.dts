@@ -26,6 +26,12 @@
 	status = "disabled";
 };
 
+&ssi2 {
+	fsl,mode = "tdm";
+	status = "okay";
+};
+
+
 &hdmi_audio {
 	status = "disabled";
 };
@@ -37,6 +43,7 @@
 &sound_sgtl5000 {
 	status = "disabled";
 };
+
 
 &codec_power {
 	status = "okay";

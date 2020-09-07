@@ -106,6 +106,21 @@
 		status = "disabled";
 	};
 
+codec: codec {
+	compatible = "ti,i2scodec";
+	clocks = <&clks 201>;
+	clock-names = "mclk";
+};
+
+sound {
+	compatible = "fsl,imx-audio-si476xtdm";
+	model = "mx-radio-si476x";
+	fm-controller = <&codec>;
+	ssi-controller = <&ssi2>;
+	mux-int-port = <0x2>;
+	mux-ext-port = <0x3>;
+};
+
 	v4l2_cap_0: v4l2-cap@0 {
 		compatible = "fsl,imx6q-v4l2-capture";
 		mclk_source = <0>;

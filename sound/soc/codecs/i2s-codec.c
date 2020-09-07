@@ -189,14 +189,14 @@ static struct snd_soc_dai_driver ab8500_codec_dai[] = {
 		.playback = {
 			.stream_name = "playback",
 			.channels_min = 1,
-			.channels_max = 32,
+			.channels_max = 8,
 			.rates = AB8500_SUPPORTED_RATE,
 			.formats = AB8500_SUPPORTED_FMT,
 		},
 		.capture = {
 			.stream_name = "capture1",
 			.channels_min =  1,
-			.channels_max = 32,
+			.channels_max = 8,
 			.rates = AB8500_SUPPORTED_RATE,
 			.formats = AB8500_SUPPORTED_FMT,
 		},
@@ -209,7 +209,7 @@ static struct snd_soc_dai_driver ab8500_codec_dai[] = {
 		.capture = {
 			.stream_name = "capture2",
 			.channels_min = 1,
-			.channels_max = 32,
+			.channels_max = 8,
 			.rates = AB8500_SUPPORTED_RATE,
 			.formats = AB8500_SUPPORTED_FMT,
 		},
